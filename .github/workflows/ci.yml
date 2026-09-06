@@ -2,14 +2,14 @@ name: Node CI Pipeline
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
   workflow_dispatch:
 
 jobs:
   validate:
-    name: Validação de Código
+    name: Validação e Tipagem
     runs-on: ubuntu-latest
     steps:
       - name: Copiar código para o runner
@@ -18,10 +18,16 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Instalar dependências
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+
+      - name: Instalar dependências (caso cache falhe)
         run: npm ci
 
       - name: Executar Lint
@@ -30,9 +36,9 @@ jobs:
       - name: Verificar Tipos (TypeScript)
         run: npm run type-check
 
-  build-and-test:
-    name: Testes e Build
-    needs: validate # <-- A mágica do Módulo 6: só roda se o job 'validate' passar!
+  test-and-build:
+    name: Testes Unitários e Build
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - name: Copiar código para o runner
@@ -41,14 +47,14 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Instalar dependências
         run: npm ci
 
-      - name: Executar Testes
+      - name: Executar Testes (Vitest)
         run: npm test
 
-      - name: Realizar Build
+      - name: Realizar Build da Aplicação
         run: npm run build
