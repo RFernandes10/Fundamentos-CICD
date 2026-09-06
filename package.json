@@ -1,0 +1,15 @@
+{
+  "name": "fundamentos-cicd",
+  "version": "1.0.0",
+  "description": "Projeto base para estudo de CI/CD com GitHub Actions",
+  "main": "dist/index.js",
+  "scripts": {
+    "lint": "echo \"Lint OK\"",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"No tests yet\"",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
