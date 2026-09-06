@@ -1,0 +1,36 @@
+name: Node CI Pipeline
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Copiar código para o runner
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar Lint
+        run: npm run lint
+
+      - name: Verificar Tipos (TypeScript)
+        run: npm run type-check
+
+      - name: Executar Testes
+        run: npm test
+
+      - name: Realizar Build
+        run: npm run build
